@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require('../db');
 
 const pagedQuery = require('../middlewares/pagedQuery');
+const toCamelCase = require('../utils/toCamelCase');
 // const wrapResponse = require('../middlewares/wrapResponse');
 // GET /api/sentences?itemId=xxx
 router.get('/', pagedQuery(async (req, res) => {
@@ -20,7 +21,7 @@ router.get('/', pagedQuery(async (req, res) => {
       [(page - 1) * pageSize, pageSize]
     );
   }
-  res.json({ page, pageSize, data: result.rows });
+  res.json({ page, pageSize, data: toCamelCase(result.rows) });
 }));
 
 module.exports = router;
