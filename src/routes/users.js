@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+const safeQuery = require('../utils/safeQuery');
 
 // POST /api/user_practice  body: { user_id, sentence_id }
 router.post('/practice', async (req, res) => {
@@ -10,7 +11,7 @@ router.post('/practice', async (req, res) => {
     const result = await db.query(
       'INSERT INTO user_practice (user_id, sentence_id, practiced_at) VALUES ($1, $2, now()) RETURNING *',
       [user_id, sentence_id]
-    );
+    ); // 插入操作无需 is_deleted
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error(err);
@@ -22,7 +23,7 @@ router.post('/practice', async (req, res) => {
 router.get('/:userId/practice', async (req, res) => {
   try {
     const { userId } = req.params;
-    const result = await db.query(
+    const result = await safeQuery(
       `SELECT up.id AS practice_id, up.practiced_at, s.*
        FROM user_practice up
        JOIN sentences s ON up.sentence_id = s.id
