@@ -3,19 +3,29 @@ const express = require('express');
 const cors = require('cors');
 const db = require('./db');
 
+
+
 const examsRouter = require('./routes/exams');
 const partsRouter = require('./routes/parts');
 const itemsRouter = require('./routes/items');
 const usersRouter = require('./routes/users');
+const sentencesRouter = require('./routes/sentences');
+const wrapResponse = require('./middlewares/wrapResponse');
+
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// 全局统一响应格式
+app.use(wrapResponse((req, res, next) => next()));
+
+
 app.use('/api/exams', examsRouter);
 app.use('/api/parts', partsRouter);
 app.use('/api/items', itemsRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/sentences', sentencesRouter);
 
 // 健康检查接口，检查API和数据库
 app.get('/health', async (req, res) => {
