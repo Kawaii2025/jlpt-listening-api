@@ -14,7 +14,11 @@ const wrapResponse = require('./middlewares/wrapResponse');
 
 
 const app = express();
-app.use(cors());
+const corsOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : [];
+app.use(cors({
+  origin: corsOrigins,
+  credentials: true
+}));
 app.use(express.json());
 
 // 全局统一响应格式
