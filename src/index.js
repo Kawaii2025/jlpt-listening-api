@@ -19,18 +19,22 @@ app.use('/api/users', usersRouter);
 
 // 健康检查接口，检查API和数据库
 app.get('/health', async (req, res) => {
-  // API健康
   let dbStatus = 'unknown';
   try {
-    // 简单查询数据库
     await db.query('SELECT 1');
     dbStatus = 'ok';
   } catch (err) {
     dbStatus = 'error';
   }
+  // 生成北京时间（东八区）时间字符串
+  const now = new Date();
+  const beijingTime = new Date(now.getTime() + 8 * 60 * 60 * 1000);
+  const pad = n => n.toString().padStart(2, '0');
+  const timestamp = `${beijingTime.getUTCFullYear()}-${pad(beijingTime.getUTCMonth() + 1)}-${pad(beijingTime.getUTCDate())} ${pad(beijingTime.getUTCHours())}:${pad(beijingTime.getUTCMinutes())}:${pad(beijingTime.getUTCSeconds())}`;
   res.json({
     api: 'ok',
-    db: dbStatus
+    db: dbStatus,
+    timestamp
   });
 });
 
